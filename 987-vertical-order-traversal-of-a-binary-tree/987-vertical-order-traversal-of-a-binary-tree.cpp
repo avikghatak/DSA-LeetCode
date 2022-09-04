@@ -13,6 +13,7 @@ class Solution {
 public:
     vector<vector<int>> verticalTraversal(TreeNode* root) {
         vector<vector<int>> res;
+        //map stores the elements along with x&y coordiates
         map<int,map<int,multiset<int>>> mp;
         queue<pair<TreeNode*,pair<int,int>>> q;
         q.push({root,{0,0}});
@@ -23,8 +24,10 @@ public:
             TreeNode* tempNode = temp.first;
             int x = temp.second.first, y = temp.second.second;
             mp[x][y].insert(tempNode->val);
+            //every vertical level on the left will be x-1
             if(tempNode->left)
                 q.push({tempNode->left,{x-1,y+1}});
+            //every vertical level on the right will be x+1
             if(tempNode->right)
                 q.push({tempNode->right,{x+1,y+1}});
         }

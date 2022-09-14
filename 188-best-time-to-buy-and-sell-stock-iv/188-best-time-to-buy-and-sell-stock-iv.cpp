@@ -1,20 +1,37 @@
 class Solution {
 public:
-    int getAns(vector<int>& prices, int n, int ind, int buy, int cap,vector<vector<vector<int>>>& dp ){
-        if(ind==n || cap==0) return 0;
-        if(dp[ind][buy][cap]!=-1) return dp[ind][buy][cap];
+    //when canBuy == 1 we buy the stock 
+    int helper(vector<int>& prices,int ind, int canBuy,vector<vector<vector<int>>>& dp,int k) {
+        //if you have reached the end of array return 0 profit
+        if(ind==prices.size() || k==0)
+            return 0;
+        //if already have the profit value return that
+        if(dp[ind][canBuy][k] != -1)
+            return dp[ind][canBuy][k];
         int profit;
-        if(buy==0){
-            profit = max(0+getAns(prices,n,ind+1,0,cap,dp), -prices[ind] + getAns(prices,n,ind+1,1,cap,dp));
-        }
-        if(buy==1){
-            profit = max(0+getAns(prices,n,ind+1,1,cap,dp),prices[ind] + getAns(prices,n,ind+1,0,cap-1,dp));
-        }
-        return dp[ind][buy][cap] = profit;
+        //if not already holding a stock
+        if(canBuy) 
+            profit = max(
+                //we either buy the current stock
+                (-prices[ind]+helper(prices,ind+1,0,dp,k))
+                //or move forward without buying
+                ,(helper(prices,ind+1,1,dp,k))
+            );
+        else
+            profit = max(
+                //either sell the current stock and get +prices[ind] profit
+                prices[ind]+helper(prices,ind+1,1,dp,k-1),
+                //or move forward without selling it
+                helper(prices,ind+1,0,dp,k)
+            );
+        dp[ind][canBuy][k] = profit;
+        return profit;
     }
+    
     int maxProfit(int k, vector<int>& prices) {
-        int n = prices.size();
-        vector<vector<vector<int>>> dp(n,vector<vector<int>>(2,vector<int>(k+1,-1)));
-        return getAns(prices,n,0,0,k,dp);
+        //storing the profit at each day (for both selling and buying)
+        vector<vector<vector<int>>> dp(prices.size(),vector<vector<int>>(2,vector<int>(k+1,-1)));
+        //dp[ind][0] is for selling and dp[ind][1] stores profit if we buy the stock
+        return helper(prices,0,1,dp,k);
     }
 };

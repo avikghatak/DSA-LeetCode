@@ -13,21 +13,23 @@ class Solution {
 public:
     vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
         vector<vector<int>> ans;
-        vector<int> currPath;
-        dfs(root,targetSum,currPath,ans);
+        //stores current array of nodes
+        vector<int> curr;
+        dfs(root,targetSum,ans,curr);
         return ans;
     }
-    void dfs(TreeNode* root, int target, vector<int>& currPath,vector<vector<int>>& ans) {
-        if (!root) return; 
-        currPath.push_back(root->val);
-        target -= root->val; 
-        if (!root->left && !root->right && target==0) 
-            ans.push_back(currPath);
-        else 
-        {
-            dfs(root->left, target, currPath, ans);
-            dfs(root->right, target, currPath, ans);
+    
+    void dfs(TreeNode* root, int sum,vector<vector<int>>& ans, vector<int>& curr){
+        if(!root) return;
+        curr.push_back(root->val);
+        sum -= root->val;
+        if(!(root->left) && !(root->right) && sum==0){
+            ans.push_back(curr);
         }
-        currPath.pop_back(); 
+        else {
+            dfs(root->left,sum,ans,curr);
+            dfs(root->right,sum,ans,curr);
+        }
+        curr.pop_back();
     }
 };
